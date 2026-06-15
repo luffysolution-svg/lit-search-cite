@@ -46,11 +46,8 @@ scansci-pdf 所有通道失败时，通过已登录的 Chrome 浏览器直接下
       "args": ["scansci-pdf"]
     },
     "chrome-devtools": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-chrome-devtools"],
-      "env": {
-        "CDP_URL": "http://localhost:9222"
-      }
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "chrome-devtools-mcp@latest"]
     }
   }
 }
