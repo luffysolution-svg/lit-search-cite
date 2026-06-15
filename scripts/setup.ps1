@@ -2,7 +2,7 @@
 .SYNOPSIS
     lit-search-cite: API key setup wizard.
 
-    Stores all API keys and VPN configuration to ~/.lit-search-cite/config.json
+    Stores all API keys to ~/.lit-search-cite/config.json
     for permanent reuse across sessions. All scripts read from this file
     automatically — you only need to run setup once.
 
@@ -15,7 +15,7 @@
     Display current configuration with masked key values.
 
 .PARAMETER Reset
-    Clear all API keys (keeps VPN config). Prompts for confirmation.
+    Clear all API keys. Prompts for confirmation.
 
 .EXAMPLE
     .\setup.ps1
@@ -37,10 +37,7 @@ function Get-Config {
         catch {}
     }
     return [PSCustomObject]@{
-        vpn_url       = ""
-        cnki_vpn_base = ""
-        vpn_username  = ""
-        api_keys      = [PSCustomObject]@{
+        api_keys = [PSCustomObject]@{
             ai4scholar       = ""
             wanfang          = ""
             unpaywall_email  = ""
@@ -89,11 +86,6 @@ if ($Show) {
     Write-Host "=== lit-search-cite Configuration ===" -ForegroundColor Cyan
     Write-Host "  File: $ConfigFile" -ForegroundColor DarkGray
     Write-Host ""
-    Write-Host "  VPN Settings (CNKI access via institutional WebVPN):"
-    Write-Host "    vpn_url       : $($cfg.vpn_url)"
-    Write-Host "    cnki_vpn_base : $($cfg.cnki_vpn_base)"
-    Write-Host "    vpn_username  : $($cfg.vpn_username)"
-    Write-Host ""
     Write-Host "  API Keys:"
     Write-Host "    ai4scholar       : $(Mask-Key $cfg.api_keys.ai4scholar)"
     Write-Host "    wanfang          : $(Mask-Key $cfg.api_keys.wanfang)"
@@ -104,13 +96,13 @@ if ($Show) {
     Write-Host "    springer         : $(Mask-Key $cfg.api_keys.springer)"
     Write-Host "    wos              : $(Mask-Key $cfg.api_keys.wos)"
     Write-Host ""
-    Write-Host "To update: run .\setup.ps1  |  CNKI VPN: python scripts/cnki-playwright.py --setup" -ForegroundColor DarkGray
+    Write-Host "To update: run .\setup.ps1" -ForegroundColor DarkGray
     return
 }
 
 # ── Reset ──────────────────────────────────────────────────────────────────────
 if ($Reset) {
-    $confirm = Read-Host "Clear all API keys? VPN settings will be kept. (y/n)"
+    $confirm = Read-Host "Clear all API keys? (y/n)"
     if ($confirm -ne 'y') { Write-Host "Cancelled."; return }
     $cfg.api_keys = [PSCustomObject]@{
         ai4scholar=""; wanfang=""; unpaywall_email=""; onescholar=""
@@ -186,7 +178,7 @@ Write-Host ""
 Write-Host "=== Setup complete! ===" -ForegroundColor Green
 Write-Host ""
 Write-Host "What's next:" -ForegroundColor Cyan
-Write-Host "  View config   : .\setup.ps1 -Show"
-Write-Host "  CNKI VPN setup: python scripts/cnki-playwright.py --setup"
-Write-Host "  Chinese search: .\cnki-search.ps1 -Query `"大语言模型 代码生成`""
+Write-Host "  View config        : .\setup.ps1 -Show"
+Write-Host "  Chinese search     : .\scripts\cnki-search.ps1 -Query `"大语言模型 代码生成`""
+Write-Host "  Chrome DevTools MCP: references/chrome-devtools.md (CNKI + paywall fallback)"
 Write-Host ""

@@ -50,13 +50,8 @@ python scripts/multi-search.py -q "cancer immunotherapy" -d biomedicine --online
 # Year filter
 python scripts/multi-search.py -q "styrene shape memory polymer" -d chemistry --year-from 2022 -t 20
 
-# Google Scholar (one-time Playwright setup required)
-python scripts/google-scholar.py --setup
-python scripts/google-scholar.py --query "attention is all you need" --limit 15
-
-# Chinese literature — CNKI via Playwright (one-time VPN setup required)
-python scripts/cnki-playwright.py --setup --school scau
-python scripts/cnki-playwright.py --query "大语言模型 代码生成" --limit 20
+# Chinese literature — CNKI via Chrome DevTools MCP (reuses existing browser login)
+# Tell Claude: "帮我在知网搜索「大语言模型」" — no setup required
 
 # Chinese literature — Wanfang API + browser URLs (Windows)
 .\scripts\cnki-search.ps1 -Query "大语言模型 代码生成"
@@ -72,8 +67,8 @@ python scripts/journal-rank.py -j "Nature" "Science" "Advanced Materials"
 | Feature | Zero-config | With API key / setup |
 |---------|------------|----------------------|
 | English search | OpenAlex + CrossRef + PubMed + arXiv | + Semantic Scholar + Google Scholar (ai4scholar MCP) |
-| Google Scholar | Browser URLs only | ai4scholar MCP (key) or Playwright (one-time setup) |
-| Chinese search | Browser URLs (CNKI/Baidu/Weipu) | + CNKI headless (Playwright) + Wanfang API |
+| Google Scholar | Browser URLs only | ai4scholar MCP (key) |
+| Chinese search | Browser URLs (CNKI/Baidu/Weipu) | + CNKI via Chrome DevTools MCP + Wanfang API |
 | Journal ranking | 300+ journal offline DB (built into multi-search) | + OneScholar live API (key) |
 | PDF download | scansci-pdf (13+ sources) | + publisher access via CARSI / EZProxy / VPNSci |
 | Citation | Manual workflow (all 7 styles) | — |
@@ -90,8 +85,6 @@ python scripts/journal-rank.py -j "Nature" "Science" "Advanced Materials"
 | `journal-rank.ps1` | Windows | Same, PowerShell version; supports ISSN lookup |
 | `pdf-fetch.py` | All | PDF download chain: Unpaywall → OpenAlex → EuropePMC → Sci-Hub URL (DOI input) |
 | `pdf-fetch.ps1` | Windows | Same, PowerShell version |
-| `cnki-playwright.py` | All | CNKI search + PDF download via Playwright; ~100 built-in school VPN entries |
-| `google-scholar.py` | All | Google Scholar via Playwright; headless after one-time setup |
 | `cnki-search.ps1` | Windows | Wanfang API results + browser URLs for CNKI, Baidu Scholar, Weipu |
 | `check-deps.ps1` | Windows | Dependency and config checker (12 checks) |
 | `setup.ps1` | Windows | Interactive API key setup wizard |
@@ -100,8 +93,7 @@ python scripts/journal-rank.py -j "Nature" "Science" "Advanced Materials"
 
 ## Requirements
 
-- **Python 3.10+** — multi-search, journal-rank, pdf-fetch, cnki-playwright, google-scholar
-- **Playwright + Chromium** — cnki-playwright.py, google-scholar.py
+- **Python 3.10+** — multi-search, journal-rank, pdf-fetch
 - **Node.js 18+** — ai4scholar MCP server (`npx -y @ai4scholar/mcp-server`)
 - **uv** — scansci-pdf MCP server (`uvx scansci-pdf`)
 - **Windows PowerShell 5.1+** — `.ps1` scripts (optional; Python scripts work cross-platform)
@@ -117,8 +109,8 @@ python scripts/journal-rank.py -j "Nature" "Science" "Advanced Materials"
 | PubMed | 36M papers | Free |
 | arXiv | 2M+ papers | Free |
 | Semantic Scholar | 214M papers | Free key |
-| Google Scholar | — | MCP key or Playwright setup |
-| CNKI (知网) | — | Institutional VPN setup |
+| Google Scholar | — | ai4scholar MCP key |
+| CNKI (知网) | — | Chrome DevTools MCP (reuses existing browser institutional login) |
 | Wanfang (万方) | — | API key |
 | Baidu Scholar / Weipu | — | Browser URL only |
 | Elsevier Scopus | 78M papers | Institutional |

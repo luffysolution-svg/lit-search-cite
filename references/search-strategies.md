@@ -31,7 +31,7 @@ python scripts/multi-search.py -q "..." -s openalex,pubmed
 
 ---
 
-## Google Scholar（ai4scholar MCP / google-scholar.py）
+## Google Scholar（ai4scholar MCP）
 
 ```
 "exact phrase search"              # 引号精确匹配
@@ -39,9 +39,7 @@ allintitle: styrene shape memory   # 全部关键词出现在标题中
 author:Vaswani attention           # 按作者检索
 ```
 
-用 `--since` / `--until`（`google-scholar.py`）或 `year_from` / `year_to`（ai4scholar MCP 参数）过滤年份，比在查询字符串中写年份更可靠。
-
-`google-scholar.py` 输出 JSON 到 stdout，Claude 可直接解析。
+用 `year_from` / `year_to`（ai4scholar MCP 参数）过滤年份，比在查询字符串中写年份更可靠。
 
 ---
 

@@ -5,12 +5,12 @@
     - CNKI / Baidu Scholar / VIP: generates browser URLs for manual lookup
     - Sci-Hub: PDF lookup by DOI
 
-    API keys and VPN settings are read from ~/.lit-search-cite/config.json
+    API keys are read from ~/.lit-search-cite/config.json
     (written by setup.ps1). Env vars are used as fallback for backward compat.
 
     NOTE: CNKI has bot detection that blocks all non-browser HTTP clients.
-    For programmatic CNKI access use scripts/cnki-playwright.py instead.
-    This script generates browser-ready CNKI/万方/百度学术/维普 URLs.
+    For programmatic CNKI access use Chrome DevTools MCP — tell Claude:
+    "帮我在知网搜索「关键词」". This script generates browser-ready URLs.
 
 .PARAMETER Query
     Search query (Chinese or English)
@@ -40,7 +40,7 @@ $ErrorActionPreference = "SilentlyContinue"
 
 # ── Load config from ~/.lit-search-cite/config.json ───────────────────────────
 $ConfigFile = Join-Path $env:USERPROFILE ".lit-search-cite\config.json"
-$Config = [PSCustomObject]@{ vpn_url=""; cnki_vpn_base=""; api_keys=[PSCustomObject]@{wanfang=""; unpaywall_email=""} }
+$Config = [PSCustomObject]@{ api_keys=[PSCustomObject]@{wanfang=""; unpaywall_email=""} }
 if (Test-Path $ConfigFile) {
     try { $Config = Get-Content $ConfigFile -Raw -Encoding UTF8 | ConvertFrom-Json }
     catch { Write-Warning "Could not parse config file: $ConfigFile" }
@@ -52,8 +52,7 @@ function Get-Key($configVal, $envVar) {
     return [System.Environment]::GetEnvironmentVariable($envVar)
 }
 
-$WanfangKey   = Get-Key $Config.api_keys.wanfang          "WANFANG_API_KEY"
-$CnkiVpnBase  = Get-Key $Config.cnki_vpn_base             "CNKI_VPN_BASE"
+$WanfangKey = Get-Key $Config.api_keys.wanfang "WANFANG_API_KEY"
 
 # ── Direct DOI -> Sci-Hub lookup ───────────────────────────────────────────────
 if ($DOI) {
@@ -108,14 +107,9 @@ if ($Source -eq "cnki" -or $Source -eq "all") {
     $cnkiDirect = "https://kns.cnki.net/kns8/defaultresult/index?kw=$encoded&korder=td"
     Write-Host ""
     Write-Host "[CNKI] Bot detection blocks non-browser access. Open one of these manually:"
-    Write-Host "  Direct : $cnkiDirect"
-    if ($CnkiVpnBase) {
-        $cnkiVpn = "$CnkiVpnBase/kns8/defaultresult/index?kw=$encoded&korder=td"
-        Write-Host "  Via VPN: $cnkiVpn"
-    } else {
-        Write-Host "  Via VPN: (configure VPN — run: python scripts/cnki-playwright.py --setup)"
-    }
-    Write-Host "  Tip: For programmatic CNKI search use: python scripts/cnki-playwright.py --query `"$Query`""
+    Write-Host "  Direct: $cnkiDirect"
+    Write-Host "  Tip: For programmatic CNKI search, tell Claude: '帮我在知网搜索「$Query」'"
+    Write-Host "       (requires Chrome DevTools MCP — see references/chrome-devtools.md)"
 }
 
 # ── 3. Baidu Scholar ───────────────────────────────────────────────────────────
@@ -154,5 +148,5 @@ if ($results.Count -gt 0) {
     Write-Host ""
     Write-Host "No API results. Use the browser URLs above, or:"
     Write-Host "  - Add Wanfang API key: .\scripts\setup.ps1"
-    Write-Host "  - Programmatic CNKI:   python scripts/cnki-playwright.py --query `"$Query`""
+    Write-Host "  - Programmatic CNKI:   tell Claude '帮我在知网搜索「$Query」' (Chrome DevTools MCP)"
 }
