@@ -131,7 +131,7 @@ CrossRef 相关性排序通常比 OpenAlex 更准确，适合"找某个具体结
 
 ---
 
-## CNKI / 知网（Chrome DevTools MCP）
+## CNKI / 知网（OpenCLI 浏览器）
 
 直接在你已登录的 Chrome 中操作知网，无需配置 WebVPN URL。知网布尔检索语法：
 
@@ -145,9 +145,9 @@ KY=强化学习                       # 关键词
 - `SU=`（主题）= 标题 + 关键词 + 摘要，覆盖面广
 - `TI=` 只匹配标题，结果少但精确
 
-**使用方式：** 告诉 Claude "帮我在知网搜索「大语言模型」"，Claude 通过 Chrome DevTools MCP 在你的浏览器中操作，自动复用机构登录态。
+**使用方式：** 告诉 Claude "帮我在知网搜索「大语言模型」"，Claude 通过 OpenCLI 在你的浏览器中操作，自动复用机构登录态。
 
-无 Chrome DevTools MCP 时回退：`cnki-search.ps1`（生成浏览器 URL，需手动打开）。
+无 OpenCLI 时回退：`cnki-search.ps1`（生成浏览器 URL，需手动打开）。
 
 ---
 

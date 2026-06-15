@@ -269,22 +269,22 @@ python scripts/pdf-fetch.py --doi "10.xxxx/..." --output ./Papers
 
 付费论文（优先级顺序）：
 1. `scansci_pdf_smart_download` — 自动尝试 Springer Direct / ElsevierAPI / Sci-Hub / OA 库
-2. 仍失败 → Chrome DevTools MCP — 在已登录的 Chrome 中直接下载（零配置，复用机构 cookies）
+2. 仍失败 → OpenCLI 浏览器 — 在已登录的 Chrome 中直接下载（零配置，复用机构 cookies；Wiley 实测有效）
 3. 一次性浏览器登录（`scansci_pdf_carsi_login` / `ezproxy_login`）→ Cookie 保存至 `~/.scansci-pdf/` → 之后永久无头下载
 
 ---
 
 ## CNKI / 知网（中文）
 
-无公开 REST API。通过 Chrome DevTools MCP 在你已登录的浏览器中访问：
+无公开 REST API。通过 OpenCLI 浏览器在你已登录的 Chrome 中访问：
 
 ```
 告诉 Claude："帮我在知网搜索「形状记忆 聚合物」"
 ```
 
-Claude 通过 Chrome DevTools MCP 自动操作知网，复用你浏览器中的机构登录状态，无需配置 VPN URL。详见 `references/chrome-devtools.md`。
+Claude 通过 OpenCLI 自动操作知网，复用你浏览器中的机构登录状态，无需配置 VPN URL。详见 `references/opencli.md`。
 
-无 Chrome DevTools MCP 时，生成浏览器 URL（需手动打开）：
+无 OpenCLI 时，生成浏览器 URL（需手动打开）：
 ```powershell
 .\scripts\cnki-search.ps1 -Query "形状记忆 聚合物"
 ```

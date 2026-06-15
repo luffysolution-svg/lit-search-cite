@@ -9,8 +9,8 @@
     (written by setup.ps1). Env vars are used as fallback for backward compat.
 
     NOTE: CNKI has bot detection that blocks all non-browser HTTP clients.
-    For programmatic CNKI access use Chrome DevTools MCP --tell Claude:
-    Tell Claude "search CNKI for <keyword>" to use Chrome DevTools MCP instead.
+    For programmatic CNKI access use OpenCLI browser -- tell Claude:
+    Tell Claude "search CNKI for <keyword>" to use OpenCLI browser instead.
     This script generates browser-ready URLs as a fallback.
 
 .PARAMETER Query
@@ -109,8 +109,8 @@ if ($Source -eq "cnki" -or $Source -eq "all") {
     Write-Host ""
     Write-Host "[CNKI] Bot detection blocks non-browser access. Open one of these manually:"
     Write-Host "  Direct: $cnkiDirect"
-    Write-Host "  Tip: For programmatic CNKI search, configure Chrome DevTools MCP"
-    Write-Host "       then tell Claude to search CNKI for you. See: references/chrome-devtools.md"
+    Write-Host "  Tip: For programmatic CNKI search, install OpenCLI browser"
+    Write-Host "       then tell Claude to search CNKI for you. See: references/opencli.md"
 }
 
 # ── 3. Baidu Scholar ───────────────────────────────────────────────────────────
@@ -149,5 +149,5 @@ if ($results.Count -gt 0) {
     Write-Host ""
     Write-Host "No API results. Use the browser URLs above, or:"
     Write-Host "  - Add Wanfang API key: .\scripts\setup.ps1"
-    Write-Host "  - Programmatic CNKI:   configure Chrome DevTools MCP (references/chrome-devtools.md)"
+    Write-Host "  - Programmatic CNKI:   install OpenCLI browser (references/opencli.md)"
 }

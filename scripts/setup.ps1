@@ -180,5 +180,5 @@ Write-Host ""
 Write-Host "What's next:" -ForegroundColor Cyan
 Write-Host "  View config        : .\setup.ps1 -Show"
 Write-Host "  Chinese search     : .\scripts\cnki-search.ps1 -Query `"LLM code generation`""
-Write-Host "  Chrome DevTools MCP: references/chrome-devtools.md (CNKI + paywall fallback)"
+Write-Host "  OpenCLI browser:     references/opencli.md (CNKI + Wiley paywall fallback)"
 Write-Host ""

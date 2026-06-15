@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.0.23] — 2026-06-15
+
+### Added
+- **OpenCLI browser integration** (`references/opencli.md`) — full configuration guide, Chrome extension install steps, environment variables, and verified test results for CNKI search, Wiley pdfdirect download, and Elsevier institutional access
+- CAS + Springer OpenCLI testing plan added to `docs/roadmap.md` (P0)
+
+### Changed
+- All Chrome DevTools MCP references replaced with OpenCLI browser across `SKILL.md`, `AGENTS.md`, `README.md`, `references/setup-guide.md`, `references/mcp-template.md`, `references/search-strategies.md`, `references/api-setup.md`, `scripts/cnki-search.ps1`, `scripts/setup.ps1`, `scripts/check-deps.ps1`
+- `references/mcp-template.md`: removed chrome-devtools MCP JSON block (OpenCLI is CLI-only, not MCP)
+- `references/setup-guide.md` Step 5 rewritten with OpenCLI install commands
+
+---
+
 ## [1.0.22] — 2026-06-15
 
 ### Fixed

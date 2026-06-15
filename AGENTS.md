@@ -50,7 +50,7 @@ python scripts/multi-search.py -q "cancer immunotherapy" -d biomedicine --online
 # Year filter
 python scripts/multi-search.py -q "styrene shape memory polymer" -d chemistry --year-from 2022 -t 20
 
-# Chinese literature — CNKI via Chrome DevTools MCP (reuses existing browser login)
+# Chinese literature — CNKI via OpenCLI browser (reuses existing browser login)
 # Tell Claude: "帮我在知网搜索「大语言模型」" — no setup required
 
 # Chinese literature — Wanfang API + browser URLs (Windows)
@@ -68,7 +68,7 @@ python scripts/journal-rank.py -j "Nature" "Science" "Advanced Materials"
 |---------|------------|----------------------|
 | English search | OpenAlex + CrossRef + PubMed + arXiv | + Semantic Scholar + Google Scholar (ai4scholar MCP) |
 | Google Scholar | Browser URLs only | ai4scholar MCP (key) |
-| Chinese search | Browser URLs (CNKI/Baidu/Weipu) | + CNKI via Chrome DevTools MCP + Wanfang API |
+| Chinese search | Browser URLs (CNKI/Baidu/Weipu) | + CNKI via OpenCLI browser + Wanfang API |
 | Journal ranking | 300+ journal offline DB (built into multi-search) | + OneScholar live API (key) |
 | PDF download | scansci-pdf (13+ sources) | + publisher access via CARSI / EZProxy / VPNSci |
 | Citation | Manual workflow (all 7 styles) | — |
@@ -110,7 +110,7 @@ python scripts/journal-rank.py -j "Nature" "Science" "Advanced Materials"
 | arXiv | 2M+ papers | Free |
 | Semantic Scholar | 214M papers | Free key |
 | Google Scholar | — | ai4scholar MCP key |
-| CNKI (知网) | — | Chrome DevTools MCP (reuses existing browser institutional login) |
+| CNKI (知网) | — | OpenCLI browser (reuses existing browser institutional login) |
 | Wanfang (万方) | — | API key |
 | Baidu Scholar / Weipu | — | Browser URL only |
 | Elsevier Scopus | 78M papers | Institutional |

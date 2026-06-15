@@ -14,9 +14,9 @@ npx lit-search-cite@latest
 
 ## 功能
 
-- **文献检索** — OpenAlex、CrossRef、PubMed、arXiv（零配置）；Semantic Scholar、Google Scholar（ai4scholar MCP）；CNKI（Chrome DevTools MCP，复用浏览器登录态）；万方（API Key）
+- **文献检索** — OpenAlex、CrossRef、PubMed、arXiv（零配置）；Semantic Scholar、Google Scholar（ai4scholar MCP）；CNKI（OpenCLI，复用浏览器登录态）；万方（API Key）
 - **期刊等级** — OneScholar 在线 API（IF / JCR / CAS / CiteScore）+ 300+ 期刊离线库（无需 Key）
-- **PDF 下载** — scansci-pdf MCP（13+ 来源：Springer Direct / ElsevierAPI / OA 库 / Sci-Hub）；付费墙兜底：Chrome DevTools MCP（零配置，复用机构登录）
+- **PDF 下载** — scansci-pdf MCP（13+ 来源：Springer Direct / ElsevierAPI / OA 库 / Sci-Hub）；付费墙兜底：OpenCLI（零额外配置，复用机构登录，Wiley 实测 6.2MB 真实 PDF）
 - **引用标注** — GB/T 7714 / APA / IEEE / MLA / Chicago / Nature / Vancouver
 - **综述写作** — 多轮搜索 + 论文聚类 + 结构化草稿
 
@@ -38,7 +38,7 @@ python scripts/journal-rank.py -j "Nature" "Science" "Advanced Materials"
 # PDF 下载（需 scansci-pdf MCP）
 # 告诉 Claude："下载 DOI 10.1038/s41586-021-03819-2 的 PDF"
 
-# 中文文献（需 Chrome DevTools MCP，Chrome 中已登录知网）
+# 中文文献（需 OpenCLI，Chrome 中已登录知网）
 # 告诉 Claude："帮我在知网搜索「大语言模型 代码生成」"
 ```
 
@@ -88,7 +88,7 @@ npx lit-search-cite --target ~/my-skills      # 自定义路径
 | arXiv | 200 万+ 篇 | 免费 |
 | Semantic Scholar | 2.14 亿篇 | 免费 Key |
 | Google Scholar | — | ai4scholar MCP Key |
-| CNKI / 知网 | — | Chrome DevTools MCP（浏览器登录态，零额外配置） |
+| CNKI / 知网 | — | OpenCLI（浏览器登录态，零额外配置） |
 | 万方 | — | API Key |
 | 百度学术 / 维普 | — | 浏览器 URL |
 | Elsevier Scopus | 7,800 万篇 | 机构授权 |
@@ -102,7 +102,7 @@ npx lit-search-cite --target ~/my-skills      # 自定义路径
 |------|-----|---------|
 | 最小 | scansci-pdf | 仅 OA PDF 下载 |
 | 推荐 | ai4scholar + scansci-pdf | 全功能搜索 + 多源下载 |
-| 完整 | + Chrome DevTools MCP | + 付费墙兜底（复用浏览器机构登录） |
+| 完整 | ai4scholar + scansci-pdf | 同上（付费墙兜底由 OpenCLI CLI 提供，非 MCP） |
 
 ## 兼容平台
 
@@ -110,4 +110,4 @@ Claude Code · Claude Desktop · OpenCode · Codex · Hermes
 
 ---
 
-[English](AGENTS.md) · [Setup Guide](references/setup-guide.md) · [Chrome DevTools MCP](references/chrome-devtools.md)
+[English](AGENTS.md) · [Setup Guide](references/setup-guide.md) · [OpenCLI Browser](references/opencli.md) · [Chrome DevTools MCP (legacy)](references/chrome-devtools.md)

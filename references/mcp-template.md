@@ -27,9 +27,7 @@
 }
 ```
 
-## 完整配置（含 Chrome DevTools MCP 付费墙兜底）
-
-scansci-pdf 所有通道失败时，通过已登录的 Chrome 浏览器直接下载，无需配置 WebVPN URL 或导出 cookies。需以 `--remote-debugging-port=9222` 启动 Chrome，详见 `references/chrome-devtools.md`。
+## 完整配置（推荐，全功能）
 
 ```json
 {
@@ -44,14 +42,14 @@ scansci-pdf 所有通道失败时，通过已登录的 Chrome 浏览器直接下
     "scansci-pdf": {
       "command": "uvx",
       "args": ["scansci-pdf"]
-    },
-    "chrome-devtools": {
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "chrome-devtools-mcp@latest"]
     }
   }
 }
 ```
+
+> **付费墙兜底（Wiley / CNKI）** 现在由 **OpenCLI** 提供，通过浏览器扩展连接，无需加入 MCP 配置。  
+> 安装方式：`npm install -g @jackwener/opencli` + 安装 Chrome 扩展。  
+> 详见 `references/opencli.md`。
 
 ## 最小配置（无需 API Key）
 

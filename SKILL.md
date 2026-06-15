@@ -60,11 +60,11 @@ Update only the `env` block inside the `ai4scholar` server entry:
 
 ```
 Search:   ai4scholar MCP  →  multi-search.py (fallback)
-Download: scansci-pdf MCP  →  Chrome DevTools MCP (paywall fallback)  →  pdf-fetch.py (OA only)
-Chinese:  ai4scholar Google Scholar MCP (Chinese keywords)  →  Chrome DevTools MCP (CNKI with existing login)
+Download: scansci-pdf MCP  →  OpenCLI browser (paywall fallback)  →  pdf-fetch.py (OA only)
+Chinese:  ai4scholar Google Scholar MCP (Chinese keywords)  →  OpenCLI browser (CNKI with existing login)
 ```
 
-**Download priority:** `scansci_pdf_smart_download` first (Springer Direct / ElsevierAPI / OA repos / Sci-Hub). Only fall back to Chrome DevTools MCP when all scansci-pdf channels fail — it reuses your existing browser login state, no extra configuration needed.
+**Download priority:** `scansci_pdf_smart_download` first (Springer Direct / ElsevierAPI / OA repos / Sci-Hub). Only fall back to OpenCLI browser when all scansci-pdf channels fail — it reuses your existing browser login state, no `--remote-debugging-port` required.
 
 ---
 
@@ -78,10 +78,10 @@ Chinese:  ai4scholar Google Scholar MCP (Chinese keywords)  →  Chrome DevTools
 | Biomedicine | `search_pubmed` + `search_semantic` | `multi-search.py -d biomedicine` |
 | Physics / Math | `search_arxiv` + `search_semantic` | `multi-search.py -d physics` |
 | Social / Humanities | `search_google_scholar` | `multi-search.py -d social` |
-| **Chinese** | `search_google_scholar` (Chinese keywords) + Chrome DevTools MCP (CNKI) | `cnki-search.ps1` browser URLs |
+| **Chinese** | `search_google_scholar` (Chinese keywords) + OpenCLI browser (CNKI) | `cnki-search.ps1` browser URLs |
 | General | `search_semantic` + `search_google_scholar` | `multi-search.py -d general` |
 
-**PDF download:** Always try `scansci_pdf_smart_download` first — covers OA, Sci-Hub, CARSI, ElsevierAPI, CORE, LibGen. If all channels fail, fall back to Chrome DevTools MCP (reuses existing browser institutional login). `pdf-fetch.py` is last resort for OA-only papers.
+**PDF download:** Always try `scansci_pdf_smart_download` first — covers OA, Sci-Hub, CARSI, ElsevierAPI, CORE, LibGen. If all channels fail, fall back to OpenCLI browser (reuses existing browser institutional login; Wiley `pdfdirect` works fully, Elsevier falls back to ElsevierAPI channel). `pdf-fetch.py` is last resort for OA-only papers.
 
 **Journal ranking:** Use offline DB via `multi-search.py` (300+ journals, zero-config). `journal-rank.py` requires OneScholar API key.
 
@@ -222,13 +222,14 @@ scansci_pdf_carsi_login()          # opens browser → log in with your universi
 scansci_pdf_smart_download(identifier="10.xxxx/...")  # headless after first login
 ```
 
-For CNKI search + PDF download via institutional login (Chrome DevTools MCP, no extra setup):
+For CNKI search + PDF download via institutional login (OpenCLI browser, no extra setup):
 ```
 Tell Claude: "帮我在知网搜索「大语言模型」" — Claude navigates CNKI in your existing
 Chrome session (institutional cookies auto-applied, no VPN URL configuration needed).
 ```
 
-See `references/chrome-devtools.md` for setup details.
+See `references/opencli.md` for verified selectors and download patterns.
+See `references/chrome-devtools.md` for the older Chrome DevTools MCP approach (requires `--remote-debugging-port=9222`).
 
 ---
 
@@ -240,10 +241,11 @@ See `references/chrome-devtools.md` for setup details.
 | `references/api-setup.md` | All API endpoints with PowerShell + Python examples |
 | `references/search-strategies.md` | Query syntax: PubMed MeSH, arXiv categories, CNKI Boolean |
 | `references/optional-apis.md` | OneScholar, Elsevier, Springer, Web of Science setup |
-| `references/chrome-devtools.md` | Chrome DevTools MCP setup — paywall fallback, CNKI institutional access |
+| `references/opencli.md` | OpenCLI browser automation — CNKI search, Wiley download, Elsevier access (verified 2026-06-15) |
+| `references/chrome-devtools.md` | Chrome DevTools MCP — legacy approach, requires `--remote-debugging-port=9222` |
 | `references/journal-ranks.json` | 300+ journal tier offline DB (built into multi-search scripts) |
 | `references/mcp-template.md` | MCP server config template (copy to `%USERPROFILE%\.claude\mcp.json`) |
 
 ---
 
-> **Note for AI:** Do NOT run `setup.ps1` or any scansci-pdf login tool (`carsi_login`, `ezproxy_login`, `import_browser_cookies`) via shell tools — these require an interactive terminal and a visible browser. Tell the user the exact command to run themselves. Chrome DevTools MCP tools (`navigate_page`, `evaluate_script`, etc.) can be called directly by the AI as they operate on the user's already-running browser.
+> **Note for AI:** Do NOT run `setup.ps1` or any scansci-pdf login tool (`carsi_login`, `ezproxy_login`, `import_browser_cookies`) via shell tools — these require an interactive terminal and a visible browser. Tell the user the exact command to run themselves. OpenCLI browser commands (`opencli browser <session> open/fill/click/eval/wait`) can be called directly by the AI via the Bash tool — they operate on the user's already-running Chrome session.

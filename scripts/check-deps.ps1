@@ -196,5 +196,5 @@ Write-Host ""
 Write-Host "Full setup guide:        references/setup-guide.md" -ForegroundColor DarkGray
 Write-Host "MCP config template:     references/mcp-template.md" -ForegroundColor DarkGray
 Write-Host "Quick config:            .\scripts\setup.ps1" -ForegroundColor DarkGray
-Write-Host "Chrome DevTools MCP:     references/chrome-devtools.md" -ForegroundColor DarkGray
+Write-Host "OpenCLI browser:         references/opencli.md" -ForegroundColor DarkGray
 Write-Host ""

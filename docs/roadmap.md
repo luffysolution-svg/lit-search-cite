@@ -7,6 +7,20 @@
 
 ## P0 — 高价值、改动小（优先做）
 
+### [ ] CAS + Springer：OpenCLI vs scansci-pdf 实测对比
+
+**背景**：Wiley 和 Elsevier 已测完（见 `references/opencli.md`）。CAS（中国科学院文献情报中心，cas.cn）和 Springer Nature 是下两个最常用的付费来源，尚未实测 OpenCLI 的机构访问表现和文件下载成功率。
+
+**计划测试项目**：
+- **Springer**：`/content/pdf/<doi>.pdf` 是否触发直接文件下载（类 Wiley `pdfdirect` 模式）；机构 token 是否从 cookies 自动生效
+- **CAS（中科院期刊）**：cas.cn / webofscience 机构入口识别；全文访问 + PDF 下载路径
+- **scansci-pdf Springer Direct 通道**：与 OpenCLI 实测速度和成功率对比
+- 更新 `references/opencli.md` 的优先级表
+
+**预计工作量**：小（测试 + 文档更新，无代码改动）
+
+---
+
 ### [ ] BibTeX / RIS 导出 + Zotero 推送
 
 **背景**：搜索完只输出格式化文本，研究者实际需要把引用导入 Zotero / Endnote / Obsidian。`scansci_pdf_zotero_push` MCP 工具已在系统内，基础设施已就位。
@@ -105,3 +119,4 @@
 | v1.0.19 | 移除 Playwright / VPN；改用 Chrome DevTools MCP |
 | v1.0.21 | journal-rank 离线兜底 + 多期刊并行查询 |
 | v1.0.22 | 安装器 allowlist；新增 Codex 平台；安装前清空旧目录 |
+| — | 新增 `references/opencli.md`；将 SKILL.md / AGENTS.md 的 Chrome DevTools MCP 替换为 OpenCLI browser；Wiley/Elsevier/CNKI 实测验证（2026-06-15）|
