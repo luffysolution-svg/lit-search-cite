@@ -10,6 +10,10 @@ Usage:
 import argparse, json, os, sys, time, urllib.request
 from pathlib import Path
 
+if sys.platform == 'win32' and hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 CONFIG_DIR = Path.home() / ".lit-search-cite"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 CACHE_FILE = CONFIG_DIR / "cache" / "journal-ranks.json"

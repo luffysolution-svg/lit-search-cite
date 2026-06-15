@@ -1,42 +1,37 @@
 {
   "name": "lit-search-cite",
-  "version": "1.0.0",
-  "description": "Multi-source academic literature search, journal ranking, auto-citation, and PDF download skill — supporting CNKI, arXiv, PubMed, Google Scholar, and more.",
+  "version": "1.0.10",
+  "description": "Multi-source academic literature search, journal ranking, auto-citation, and PDF download skill",
   "keywords": [
     "claude-code",
-    "claude-skill",
-    "opencode-skill",
+    "opencode",
     "academic",
     "literature-search",
-    "paper-download",
-    "citation",
-    "journal-ranking",
     "cnki",
     "pubmed",
     "arxiv",
-    "google-scholar"
+    "citation"
   ],
   "license": "MIT",
-  "author": "",
+  "author": "luffysolution",
   "repository": {
     "type": "git",
-    "url": "https://github.com/<user>/lit-search-cite"
+    "url": "https://github.com/luffysolution-svg/lit-search-cite"
   },
   "bin": {
-    "lit-search-cite": "./install.js"
+    "lit-search-cite": "./cli.js"
   },
   "files": [
     "SKILL.md",
     "AGENTS.md",
-    "README.md",
-    "CHANGELOG.md",
     "LICENSE",
-    "references/",
+    "cli.js",
     "scripts/",
-    "evals/",
-    ".claude/",
-    "install.js"
+    "references/"
   ],
+  "scripts": {
+    "postinstall": "node cli.js"
+  },
   "engines": {
     "node": ">=18"
   }

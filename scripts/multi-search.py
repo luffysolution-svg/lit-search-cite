@@ -11,6 +11,10 @@ import argparse, json, os, re, sys, time, urllib.request
 from pathlib import Path
 from urllib.parse import quote
 
+if sys.platform == 'win32' and hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 # ── Source routing by domain ───────────────────────────────────────────────────
 DEFAULT_SOURCES = {
     "cs":          ["openalex", "arxiv"],

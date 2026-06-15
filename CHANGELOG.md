@@ -1,45 +1,56 @@
-# 更新日志
+# Changelog
 
-## v1.0.0 (2026-06-15)
+All notable changes to this project are documented here.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-### 核心功能
+---
 
-- **多源文献检索**: OpenAlex、CrossRef、PubMed、arXiv、Semantic Scholar、Google Scholar（MCP + Playwright）、CNKI（Playwright）、Elsevier Scopus、Springer Nature
-- **期刊等级查询**: OneScholar API + 300+ 期刊离线库，支持 CAS/JCR/CCF/IF
-- **PDF 下载**: scansci-pdf MCP（13+ 来源）+ pdf-fetch 回退链（Unpaywall → OpenAlex → EuropePMC → Sci-Hub）
-- **自动引用**: 手动工作流，支持 APA、GB/T 7714、IEEE、MLA、Chicago、Nature、Vancouver
-- **综述写作**: 多轮搜索、论文聚类、结构化草稿生成
+## [1.0.10] — 2026-06-15
 
-### 脚本
+### Fixed
+- Windows GBK console encoding crash (`UnicodeEncodeError`) in `multi-search.py`, `journal-rank.py`, `pdf-fetch.py` when printing non-ASCII characters (e.g., author names with diacritics) — added `sys.stdout.reconfigure(encoding='utf-8', errors='replace')` on win32 (note: `google-scholar.py` and `cnki-playwright.py` already had this fix)
 
-| 脚本 | 平台 | 说明 |
-|--------|----------|-------------|
-| `multi-search.py` | 全平台 | 一键多源搜索 + 去重 + 期刊等级 |
-| `multi-search.ps1` | Windows | PowerShell 版（同功能） |
-| `journal-rank.py` | 全平台 | OneScholar API + 离线库期刊等级查询 |
-| `journal-rank.ps1` | Windows | PowerShell 版（同功能） |
-| `pdf-fetch.py` | 全平台 | PDF 下载回退链 |
-| `pdf-fetch.ps1` | Windows | PowerShell 版（同功能） |
-| `cnki-playwright.py` | 全平台 | 知网搜索 + 76 所高校 VPN 配置 |
-| `cnki-search.ps1` | Windows | 中文文献检索（万方 API + 浏览器链接） |
-| `google-scholar.py` | 全平台 | Google Scholar Playwright 方案（配置后无头运行） |
-| `check-deps.ps1` | Windows | 依赖检查 |
-| `setup.ps1` | Windows | API Key 配置向导 |
+---
 
-### 文档
+## [1.0.9] — 2026-06-15
 
-- `SKILL.md` — 核心 Skill 指令（5 种模式，平台通用）
-- `README.md` — 中文文档（GitHub 默认展示）
-- `AGENTS.md` — 英文文档
-- `references/api-setup.md` — 全部 API 端点及 PowerShell + Bash 示例
-- `references/setup-guide.md` — 完整安装指南
-- `references/search-strategies.md` — 各数据源查询语法
-- `references/optional-apis.md` — OneScholar、Elsevier、Springer、WoS 配置
-- `references/journal-ranks.json` — 300+ 期刊离线等级库
-- `references/mcp-template.json` — MCP 服务器配置模板
+### Added
+- `cli.js` replaces `install.js`: fixes `--all` flag bug (previously installed 0 locations), adds `--help` / `-h`, `--version` / `-v`, proper exit codes
+- `package.json`: added `bin` field (`lit-search-cite` → `cli.js`) to fix `npx` "could not determine executable" warning; added `files`, `author`, `repository` object fields
+- `google-scholar.py`: Google Scholar via Playwright; one-time setup, headless after; supports `--query`, `--limit`, `--since`, `--until`, `--status`, `--login-only`
+- `cnki-playwright.py`: built-in VPN URL lookup for ~100 Chinese universities; `--db` flag for database selection; PDF download via browser `fetch()` (VPN cookie-aware); debug screenshot on failure
+- `check-deps.ps1`: 12-item dependency and config checker
+- `scripts/setup.ps1`: API key wizard with `-Show` and `-Reset` flags; stores 8 keys including `wos`
+- `references/mcp-template.json`: copy-paste MCP config template
 
-### 平台支持
+### Changed
+- `SKILL.md`: updated description to eval-optimized version; corrected Mode 5 PDF download (scansci-pdf primary, pdf-fetch fallback for DOI only); added `google-scholar.py` usage examples; fixed journal-rank.py note (requires OneScholar key, no silent offline fallback)
+- `README.md`: rewritten based on actual source code; corrected script list and capabilities
+- `AGENTS.md`: rewritten; fixed undefined `$SKILL_DIR` in manual installation; corrected Hermes note; accurate feature table
+- `references/setup-guide.md`: rewritten; added Google Scholar step; corrected school count (~100); accurate config file schema
+- `references/api-setup.md`: added missing Path H (Wanfang API); fixed api table ordering; corrected PowerShell examples
+- `references/search-strategies.md`: added `multi-search.py` domain routing table; corrected arXiv category list; added CNKI `--db` note
+- `references/optional-apis.md`: added Wanfang section; clarified journal-rank offline DB scope; corrected OneScholar note
 
-- Claude Code、Claude Desktop、OpenCode、Codex、Hermes
-- Windows（PowerShell + Python）、macOS/Linux（Python）
-- 符合 Agent Skills 标准（`compatibility` 字段声明）
+### Fixed
+- `--all` flag in `cli.js` now correctly installs to all 3 platforms
+- `npx lit-search-cite` no longer shows "could not determine executable" warning
+- CHANGELOG was stuck at v1.0.0 while package was at v1.0.9
+
+---
+
+## [1.0.0] — 2026-06-15
+
+### Added
+- Multi-source literature search: OpenAlex, CrossRef, PubMed, arXiv (zero-config); Semantic Scholar, Google Scholar (ai4scholar MCP); CNKI (Playwright); Wanfang (API)
+- Journal ranking: OneScholar API (IF / JCR / CAS / CiteScore) + 300+ journal offline DB
+- PDF download: scansci-pdf MCP (13+ sources) + pdf-fetch fallback chain (Unpaywall → OpenAlex → EuropePMC → Sci-Hub URL)
+- Auto-citation: manual workflow supporting APA, GB/T 7714, IEEE, MLA, Chicago, Nature, Vancouver
+- Literature review: multi-round search, paper clustering, structured draft generation
+- SKILL.md: 5 modes (search, citation, review, relevance, PDF); platform-agnostic
+- `multi-search.py` / `multi-search.ps1`: domain-routed multi-source search, DOI dedup, journal ranking
+- `journal-rank.py` / `journal-rank.ps1`: OneScholar API with local cache
+- `pdf-fetch.py` / `pdf-fetch.ps1`: PDF download chain (DOI input)
+- `cnki-search.ps1`: Wanfang API + browser URLs for CNKI / Baidu Scholar / Weipu
+- Platform support: Claude Code, Claude Desktop, OpenCode, Codex, Hermes
+- `npx lit-search-cite` installer
