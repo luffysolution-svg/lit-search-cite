@@ -45,18 +45,23 @@ python scripts/journal-rank.py -j "Nature" "Science" "Advanced Materials"
 ## 安装
 
 ```bash
-npx lit-search-cite                           # 自动检测所有平台
+npx lit-search-cite@latest                    # 自动检测所有平台（推荐）
 npx lit-search-cite --claude                  # 仅 Claude Code / Claude Desktop
-npx lit-search-cite --opencode                # 仅 OpenCode / Codex
+npx lit-search-cite --opencode                # 仅 OpenCode
+npx lit-search-cite --codex                   # 仅 Codex
+npx lit-search-cite --agents                  # 仅 Agent Skills (.agents)
 npx lit-search-cite --target ~/my-skills      # 自定义路径
 ```
+
+每次安装会先清空旧目录再写入，重复运行安全。安装内容仅包含 `SKILL.md`、`AGENTS.md`、`scripts/`、`references/`。
 
 或手动复制到平台对应的 skills 目录：
 
 | 平台 | 目录（全局） | 目录（项目级） |
 |------|------------|--------------|
-| Claude Code | `~/.claude/skills/lit-search-cite/` | `.claude/skills/lit-search-cite/` |
-| OpenCode / Codex | `~/.config/opencode/skills/lit-search-cite/` | `.opencode/skills/lit-search-cite/` |
+| Claude Code / Claude Desktop | `~/.claude/skills/lit-search-cite/` | `.claude/skills/lit-search-cite/` |
+| OpenCode | `~/.config/opencode/skills/lit-search-cite/` | `.opencode/skills/lit-search-cite/` |
+| Codex | `~/.codex/skills/lit-search-cite/` | `.codex/skills/lit-search-cite/` |
 | 通用 Agent Skills | `~/.agents/skills/lit-search-cite/` | `.agents/skills/lit-search-cite/` |
 
 ## 脚本
