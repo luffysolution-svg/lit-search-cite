@@ -14,9 +14,9 @@ npx lit-search-cite
 
 ## 功能
 
-- **文献检索** — OpenAlex、CrossRef、PubMed、arXiv（零配置）；Semantic Scholar、Google Scholar（MCP Key 或 Playwright）；CNKI、万方（VPN / API Key）
+- **文献检索** — OpenAlex、CrossRef、PubMed、arXiv（零配置）；Semantic Scholar、Google Scholar（ai4scholar MCP）；CNKI（Chrome DevTools MCP，复用浏览器登录态）；万方（API Key）
 - **期刊等级** — OneScholar 在线 API（IF / JCR / CAS / CiteScore）+ 300+ 期刊离线库（无需 Key）
-- **PDF 下载** — scansci-pdf MCP（13+ 来源）+ pdf-fetch 回退链（Unpaywall → OpenAlex → EuropePMC → Sci-Hub URL）
+- **PDF 下载** — scansci-pdf MCP（13+ 来源：Springer Direct / ElsevierAPI / OA 库 / Sci-Hub）；付费墙兜底：Chrome DevTools MCP（零配置，复用机构登录）
 - **引用标注** — GB/T 7714 / APA / IEEE / MLA / Chicago / Nature / Vancouver
 - **综述写作** — 多轮搜索 + 论文聚类 + 结构化草稿
 
@@ -32,15 +32,14 @@ python scripts/multi-search.py -q "transformer attention mechanism" -d cs --onli
 # 年份过滤
 python scripts/multi-search.py -q "cancer immunotherapy" -d biomedicine --year-from 2022 -t 20
 
-# Google Scholar（需一次性 Playwright 配置）
-python scripts/google-scholar.py --query "attention is all you need" --limit 15
-
-# 中文文献（需一次性 VPN 配置）
-python scripts/cnki-playwright.py --setup --school scau
-python scripts/cnki-playwright.py --query "大语言模型 代码生成" --limit 20
-
 # 期刊等级查询（需 OneScholar Key）
 python scripts/journal-rank.py -j "Nature" "Science" "Advanced Materials"
+
+# PDF 下载（需 scansci-pdf MCP）
+# 告诉 Claude："下载 DOI 10.1038/s41586-021-03819-2 的 PDF"
+
+# 中文文献（需 Chrome DevTools MCP，Chrome 中已登录知网）
+# 告诉 Claude："帮我在知网搜索「大语言模型 代码生成」"
 ```
 
 ## 安装
@@ -70,10 +69,8 @@ npx lit-search-cite --target ~/my-skills      # 自定义路径
 | `journal-rank.ps1` | Windows | 同上，PowerShell 版，支持 ISSN 查询 |
 | `pdf-fetch.py` | 全平台 | PDF 下载回退链（DOI 输入，Unpaywall → OpenAlex → EuropePMC） |
 | `pdf-fetch.ps1` | Windows | 同上，PowerShell 版 |
-| `cnki-playwright.py` | 全平台 | CNKI 搜索 + PDF 下载，内置 ~100 所高校 VPN 地址 |
-| `google-scholar.py` | 全平台 | Google Scholar Playwright 方案，一次性配置后无头运行 |
 | `cnki-search.ps1` | Windows | 万方 API + CNKI/百度学术/维普 浏览器 URL 生成 |
-| `check-deps.ps1` | Windows | 依赖检查（12 项） |
+| `check-deps.ps1` | Windows | 依赖检查 |
 | `setup.ps1` | Windows | API Key 配置向导 |
 
 ## 支持的文献源
@@ -85,12 +82,22 @@ npx lit-search-cite --target ~/my-skills      # 自定义路径
 | PubMed | 3,600 万篇 | 免费 |
 | arXiv | 200 万+ 篇 | 免费 |
 | Semantic Scholar | 2.14 亿篇 | 免费 Key |
-| Google Scholar | — | MCP Key 或 Playwright 配置 |
-| CNKI / 知网 | — | 机构 VPN 配置 |
+| Google Scholar | — | ai4scholar MCP Key |
+| CNKI / 知网 | — | Chrome DevTools MCP（浏览器登录态，零额外配置） |
 | 万方 | — | API Key |
 | 百度学术 / 维普 | — | 浏览器 URL |
 | Elsevier Scopus | 7,800 万篇 | 机构授权 |
 | Springer Nature OA | — | 免费 Key |
+
+## MCP 配置
+
+详见 `references/mcp-template.json`，支持三种配置级别：
+
+| 级别 | MCP | 适用场景 |
+|------|-----|---------|
+| 最小 | scansci-pdf | 仅 OA PDF 下载 |
+| 推荐 | ai4scholar + scansci-pdf | 全功能搜索 + 多源下载 |
+| 完整 | + Chrome DevTools MCP | + 付费墙兜底（复用浏览器机构登录） |
 
 ## 兼容平台
 
@@ -98,4 +105,4 @@ Claude Code · Claude Desktop · OpenCode · Codex · Hermes
 
 ---
 
-[English](AGENTS.md) · [Changelog](CHANGELOG.md) · [Setup Guide](references/setup-guide.md)
+[English](AGENTS.md) · [Setup Guide](references/setup-guide.md) · [Chrome DevTools MCP](references/chrome-devtools.md)
