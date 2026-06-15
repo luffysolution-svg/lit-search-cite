@@ -1,0 +1,27 @@
+# Default: normalize to LF in repo, checkout as-is
+* text=auto
+
+# Scripts: LF in repo, LF on checkout (run on Linux/Mac too)
+*.py   text eol=lf
+*.js   text eol=lf
+*.sh   text eol=lf
+
+# PowerShell: LF in repo, CRLF on checkout (Windows-only)
+*.ps1  text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+
+# Docs & data: LF everywhere
+*.md   text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.toml text eol=lf
+
+# Binary: no line-ending conversion
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.pdf  binary
+*.zip  binary
+*.tgz  binary
