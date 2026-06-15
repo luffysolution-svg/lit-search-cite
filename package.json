@@ -1,6 +1,6 @@
 ﻿{
   "name": "lit-search-cite",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "Multi-source academic literature search, journal ranking, auto-citation, and PDF download skill",
   "keywords": [
     "claude-code",

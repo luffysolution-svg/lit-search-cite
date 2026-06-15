@@ -194,20 +194,75 @@ if ($allQueries.Count -eq 0) {
     exit 1
 }
 
-$results = Get-BatchedRanks -Queries $allQueries
+$results = @(Get-BatchedRanks -Queries $allQueries)
+
+# ── Offline fallback for any journal not returned by the API ──────────────────
+$RankFile = Join-Path $PSScriptRoot "..\references\journal-ranks.json"
+$offlineDb = $null
+if (Test-Path $RankFile) {
+    try { $offlineDb = Get-Content $RankFile -Raw -Encoding UTF8 | ConvertFrom-Json }
+    catch {}
+}
+
+$foundNames = @($results | ForEach-Object { $_.Query.ToLower() })
+foreach ($q in $allQueries) {
+    if ($q.Type -ne "journal") { continue }
+    if ($foundNames -contains $q.Value.ToLower()) { continue }
+    if ($null -eq $offlineDb) { continue }
+
+    $key = $q.Value.Trim().ToLower() -replace '^the\s+',''
+    $entry = $offlineDb.journals.$key
+    if (-not $entry) {
+        $alias = $offlineDb._aliases.$key
+        if ($alias) { $entry = $offlineDb.journals.$alias }
+    }
+    if ($entry) {
+        $results += [PSCustomObject]@{
+            Query    = $q.Value; Type = "journal"; Source = "offline"
+            IF       = [string]$entry.if; IF5 = ""; JCR = ""
+            CAS      = ([string]$entry.tier + " " + [string]$entry.level).Trim()
+            CASTop = ""; CASUpgrade = ""; CiteScore = ""; Title = $q.Value
+            WosCore = ""; NatureIndex = ""; JcarRisk = ""; HUST = ""; SJTU = ""
+        }
+    } else {
+        $results += [PSCustomObject]@{
+            Query    = $q.Value; Type = "journal"; Source = "not_found"
+            IF = ""; IF5 = ""; JCR = ""; CAS = ""; CASTop = ""; CASUpgrade = ""
+            CiteScore = ""; Title = ""; WosCore = ""; NatureIndex = ""
+            JcarRisk = ""; HUST = ""; SJTU = ""
+        }
+    }
+}
 
 # ── Output ─────────────────────────────────────────────────────────────────────
-if ($results.Count -eq 1 -and -not $Quiet) {
-    $r = $results[0]
-    Write-Host ""
-    Write-Host "=== $($r.Query) ===" -ForegroundColor Cyan
-    Write-Host "  Impact Factor : $($r.IF) (5yr: $($r.IF5))"
-    Write-Host "  JCR           : $($r.JCR)"
-    Write-Host "  CAS           : $($r.CAS) ($($r.CASTop))  |  Upgrade: $($r.CASUpgrade)"
-    Write-Host "  CiteScore     : $($r.CiteScore)"
-    Write-Host "  WoS Core      : $($r.WosCore)  |  Nature Index: $($r.NatureIndex)"
-    Write-Host "  Risk          : $($r.JcarRisk)"
-    Write-Host "  HUST          : $($r.HUST)  |  SJTU: $($r.SJTU)"
+if (-not $Quiet -and $results.Count -gt 0) {
+    if ($results.Count -eq 1) {
+        $r = $results[0]
+        $src = if ($r.Source -and $r.Source -ne "api") { "  [$($r.Source)]" } else { "" }
+        Write-Host ""
+        Write-Host "=== $($r.Query) ===$src" -ForegroundColor Cyan
+        $ifStr = if ($r.IF5) { "$($r.IF) (5yr: $($r.IF5))" } else { $r.IF }
+        $casStr = if ($r.CASTop) { "$($r.CAS) ($($r.CASTop))" } else { $r.CAS }
+        if ($r.CASUpgrade) { $casStr += "  |  Upgrade: $($r.CASUpgrade)" }
+        Write-Host "  Impact Factor : $(if ($ifStr) { $ifStr } else { '--' })"
+        Write-Host "  JCR           : $(if ($r.JCR) { $r.JCR } else { '--' })"
+        Write-Host "  CAS           : $(if ($casStr) { $casStr } else { '--' })"
+        if ($r.CiteScore)    { Write-Host "  CiteScore     : $($r.CiteScore)" }
+        if ($r.WosCore)      { Write-Host "  WoS Core      : $($r.WosCore)  |  Nature Index: $($r.NatureIndex)" }
+        if ($r.JcarRisk)     { Write-Host "  Risk          : $($r.JcarRisk)" }
+        if ($r.HUST -or $r.SJTU) { Write-Host "  HUST          : $($r.HUST)  |  SJTU: $($r.SJTU)" }
+    } else {
+        Write-Host ""
+        Write-Host ("{0,-35}  {1,6}  {2,-6}  {3,-14}  {4}" -f "Journal","IF","JCR","CAS","Source") -ForegroundColor Cyan
+        Write-Host ("-" * 75)
+        foreach ($r in $results) {
+            $src = if ($r.Source) { $r.Source } else { "api" }
+            $ifStr  = if ($r.IF)  { $r.IF }  else { if ($src -eq "not_found") { "--" } else { "" } }
+            $jcrStr = if ($r.JCR) { $r.JCR } else { if ($src -eq "not_found") { "--" } else { "" } }
+            $casStr = if ($r.CAS) { $r.CAS } else { if ($src -eq "not_found") { "--" } else { "" } }
+            Write-Host ("  {0,-33}  {1,6}  {2,-6}  {3,-14}  {4}" -f $r.Query,$ifStr,$jcrStr,$casStr,$src)
+        }
+    }
 }
 
 return $results
