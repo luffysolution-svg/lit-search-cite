@@ -1,6 +1,6 @@
 ﻿{
   "name": "lit-search-cite",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "Multi-source academic literature search, journal ranking, auto-citation, and PDF download skill",
   "keywords": [
     "claude-code",
@@ -26,15 +26,7 @@
     "AGENTS.md",
     "LICENSE",
     "cli.js",
-    "scripts/check-deps.ps1",
-    "scripts/cnki-search.ps1",
-    "scripts/journal-rank.ps1",
-    "scripts/journal-rank.py",
-    "scripts/multi-search.ps1",
-    "scripts/multi-search.py",
-    "scripts/pdf-fetch.ps1",
-    "scripts/pdf-fetch.py",
-    "scripts/setup.ps1",
+    "scripts/",
     "references/"
   ],
   "scripts": {

@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.0.22] — 2026-06-15
+
+### Fixed
+- Installer now copies only `SKILL.md`, `AGENTS.md`, `scripts/`, `references/` — eliminates `cli.js`, `package.json`, `LICENSE`, `CHANGELOG.md`, `README.md`, `.claude/`, `evals/` from installed skill directories
+- Old install directories are cleaned before each reinstall to remove stale files from prior versions
+
+### Added
+- **Codex target** (`~/.codex/skills/lit-search-cite`) — skill now installs to Codex automatically; use `--codex` flag to install only there
+- `removeDir()` pre-clean step ensures idempotent reinstalls with no leftover artifacts
+
+### Changed
+- `package.json` `files` uses `scripts/` directory glob instead of listing individual script files
+- `--opencode` / `-o` flag no longer doubles as Codex; Codex gets its own `--codex` flag
+
+---
+
 ## [1.0.11] — 2026-06-15
 
 ### Changed

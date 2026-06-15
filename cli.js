@@ -8,7 +8,10 @@ const os   = require('os');
 const PKG        = require('./package.json');
 const SKILL_NAME = 'lit-search-cite';
 const SRC        = __dirname;
-const SKIP_DIRS  = new Set(['node_modules', '.git']);
+
+// Only these root-level entries are copied into each skill location.
+// Subdirectories (scripts/, references/) are copied fully.
+const ROOT_ALLOWLIST = new Set(['SKILL.md', 'AGENTS.md', 'scripts', 'references']);
 
 const TARGETS = {
   claude: {
@@ -19,14 +22,21 @@ const TARGETS = {
     ],
   },
   opencode: {
-    label: 'OpenCode / Codex',
+    label: 'OpenCode',
     dirs: [
       path.join(os.homedir(), '.config', 'opencode', 'skills', SKILL_NAME),
       path.join(process.cwd(), '.opencode', 'skills', SKILL_NAME),
     ],
   },
+  codex: {
+    label: 'Codex',
+    dirs: [
+      path.join(os.homedir(), '.codex', 'skills', SKILL_NAME),
+      path.join(process.cwd(), '.codex', 'skills', SKILL_NAME),
+    ],
+  },
   agents: {
-    label: 'Agent Skills',
+    label: 'Agent Skills (.agents)',
     dirs: [
       path.join(os.homedir(), '.agents', 'skills', SKILL_NAME),
       path.join(process.cwd(), '.agents', 'skills', SKILL_NAME),
@@ -34,14 +44,20 @@ const TARGETS = {
   },
 };
 
-function copyDir(src, dest) {
+// Remove a directory tree, silently ignoring missing paths.
+function removeDir(dir) {
+  try { fs.rmSync(dir, { recursive: true, force: true }); } catch {}
+}
+
+// Copy src → dest. At root=true only ROOT_ALLOWLIST entries are copied.
+function copyDir(src, dest, root) {
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-    if (SKIP_DIRS.has(entry.name)) continue;
+    if (root && !ROOT_ALLOWLIST.has(entry.name)) continue;
     const srcPath  = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
     if (entry.isDirectory()) {
-      copyDir(srcPath, destPath);
+      copyDir(srcPath, destPath, false);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -66,7 +82,8 @@ function installTarget(key) {
     return false;
   }
 
-  copyDir(SRC, destDir);
+  removeDir(destDir);          // clean old install first
+  copyDir(SRC, destDir, true); // then copy only allowlisted files
   console.log(`  ${target.label}: ${destDir}`);
   return true;
 }
@@ -88,10 +105,11 @@ Usage:
 
 Options:
   (no flags)       Install to all detected platforms
-  --claude, -c     Install to Claude Code / Claude Desktop only
-  --opencode, -o   Install to OpenCode / Codex only
-  --agents, -a     Install to Agent Skills only
-  --all            Install to all platforms (same as no flags)
+  --claude, -c     Claude Code / Claude Desktop only
+  --opencode, -o   OpenCode only
+  --codex          Codex only
+  --agents, -a     Agent Skills (.agents) only
+  --all            All platforms (same as no flags)
   --target <dir>   Install to a custom directory
   --version, -v    Print version and exit
   --help, -h       Show this help
@@ -99,11 +117,12 @@ Options:
   process.exit(0);
 }
 
-// --target <dir>
+// --target <dir>: copy only allowlisted files to a custom path
 const tiIdx = argv.indexOf('--target');
 if (tiIdx >= 0 && argv[tiIdx + 1]) {
   const dest = argv[tiIdx + 1];
-  copyDir(SRC, dest);
+  removeDir(dest);
+  copyDir(SRC, dest, true);
   console.log(`\nlit-search-cite v${PKG.version}`);
   console.log(`Installed to: ${dest}\n`);
   process.exit(0);
@@ -112,12 +131,12 @@ if (tiIdx >= 0 && argv[tiIdx + 1]) {
 const flags = {
   claude:   argv.includes('--claude')   || argv.includes('-c'),
   opencode: argv.includes('--opencode') || argv.includes('-o'),
-  agents:   argv.includes('--agents')  || argv.includes('-a'),
+  codex:    argv.includes('--codex'),
+  agents:   argv.includes('--agents')   || argv.includes('-a'),
   all:      argv.includes('--all'),
 };
 
-const anyFlag = flags.claude || flags.opencode || flags.agents || flags.all;
-// When --all or no flags: install everything. When specific flags: only those.
+const anyFlag = flags.claude || flags.opencode || flags.codex || flags.agents || flags.all;
 const keys = (!anyFlag || flags.all)
   ? Object.keys(TARGETS)
   : Object.keys(flags).filter(k => k !== 'all' && flags[k]);
