@@ -16,10 +16,10 @@
   "author": "luffysolution",
   "repository": {
     "type": "git",
-    "url": "https://github.com/luffysolution-svg/lit-search-cite"
+    "url": "git+https://github.com/luffysolution-svg/lit-search-cite.git"
   },
   "bin": {
-    "lit-search-cite": "./cli.js"
+    "lit-search-cite": "cli.js"
   },
   "files": [
     "SKILL.md",
