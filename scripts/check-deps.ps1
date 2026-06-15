@@ -3,15 +3,14 @@
     lit-search-cite: dependency and configuration checker.
 
     Run this after first-time setup to verify everything is installed and configured.
-    Checks Python, Playwright, MCP config (ai4scholar + scansci-pdf), API keys,
-    CNKI session cookies, and scansci-pdf cookie files.
+    Checks Python, Node.js, uv, MCP config (ai4scholar + scansci-pdf + chrome-devtools),
+    API keys, Chrome DevTools reachability, and scansci-pdf cookie files.
 
 .EXAMPLE
     .\scripts\check-deps.ps1
 #>
 
 $ConfigFile  = Join-Path $env:USERPROFILE ".lit-search-cite\config.json"
-$SessionFile = Join-Path $env:USERPROFILE ".lit-search-cite\cnki_session.json"
 $McpFile     = Join-Path $env:USERPROFILE ".claude\mcp.json"
 $ScansciDir  = Join-Path $env:USERPROFILE ".scansci-pdf"
 
@@ -46,16 +45,7 @@ try {
     Check "Python" $false "not found" "winget install Python.Python.3.11"
 }
 
-# ── 2. Playwright ─────────────────────────────────────────────────────────────
-$pwOk = $false
-try {
-    $pwOut = python -c "from playwright.sync_api import sync_playwright; print('ok')" 2>&1
-    $pwOk = ($pwOut -match 'ok')
-} catch {}
-Check "Playwright (Python)" $pwOk "not installed" `
-    "pip install playwright && playwright install chromium"
-
-# ── 3. Node.js / npx ─────────────────────────────────────────────────────────
+# ── 2. Node.js / npx ─────────────────────────────────────────────────────────
 $nodeVer = $null
 try {
     $nodeVer = (node --version 2>&1) -replace 'v',''
@@ -68,35 +58,44 @@ try {
         "winget install OpenJS.NodeJS"
 }
 
-# ── 4. uv ─────────────────────────────────────────────────────────────────────
+# ── 3. uv ─────────────────────────────────────────────────────────────────────
 $uvOk = $false
 try { $uvOk = ((uvx --version 2>&1) -match '\d+\.\d+') } catch {}
 Check "uv / uvx" $uvOk "not found (required for scansci-pdf MCP)" `
     "pip install uv  OR  winget install astral-sh.uv"
 
-# ── 5. mcp.json — ai4scholar ─────────────────────────────────────────────────
+# ── 4. mcp.json ───────────────────────────────────────────────────────────────
 $mcpJson = $null
-$ai4scholarInMcp = $false
-$scansciInMcp    = $false
+$ai4scholarInMcp   = $false
+$scansciInMcp      = $false
+$chromeDevtoolsInMcp = $false
 if (Test-Path $McpFile) {
     try {
         $mcpJson = Get-Content $McpFile -Raw -Encoding UTF8 | ConvertFrom-Json
         $servers = $mcpJson.mcpServers
-        $ai4scholarInMcp = $null -ne $servers.ai4scholar
-        $scansciInMcp    = $null -ne $servers.'scansci-pdf'
+        $ai4scholarInMcp     = $null -ne $servers.ai4scholar
+        $scansciInMcp        = $null -ne $servers.'scansci-pdf'
+        $chromeDevtoolsInMcp = $null -ne $servers.'chrome-devtools'
     } catch {
         Check "mcp.json parse" $false "JSON parse error in $McpFile" "Fix JSON syntax errors"
     }
 } else {
     Check "mcp.json" $false "not found at $McpFile" `
-        "Create $McpFile with ai4scholar + scansci-pdf entries (see Prerequisites in SKILL.md)"
+        "Create $McpFile — see references/mcp-template.md"
 }
 Check "ai4scholar MCP entry in mcp.json" $ai4scholarInMcp `
     "missing" "Add ai4scholar server block to $McpFile then restart Claude Code"
 Check "scansci-pdf MCP entry in mcp.json" $scansciInMcp `
     "missing" "Add scansci-pdf server block to $McpFile then restart Claude Code"
 
-# ── 6. ai4scholar API key ─────────────────────────────────────────────────────
+# chrome-devtools is optional — WARN only
+if ($chromeDevtoolsInMcp) {
+    $ok += "  [OK]   chrome-devtools MCP entry in mcp.json (paywall fallback enabled)"
+} else {
+    $warn += "  [WARN] chrome-devtools MCP entry in mcp.json — not configured (optional)`n         Fix: Add chrome-devtools block to $McpFile — see references/chrome-devtools.md"
+}
+
+# ── 5. ai4scholar API key ─────────────────────────────────────────────────────
 $ai4Key = ""
 if ($ai4scholarInMcp -and $mcpJson.mcpServers.ai4scholar.env) {
     $ai4Key = $mcpJson.mcpServers.ai4scholar.env.AI4SCHOLAR_API_KEY
@@ -114,7 +113,7 @@ Check "AI4SCHOLAR_API_KEY set" ($ai4Key -and $ai4Key.StartsWith("sk-")) `
     "not set or wrong format" `
     "Get key at https://ai4scholar.net → Dashboard → Open Platform; add to mcp.json env block"
 
-# ── 7. Config file ────────────────────────────────────────────────────────────
+# ── 6. Config file ────────────────────────────────────────────────────────────
 $cfgOk = Test-Path $ConfigFile
 Check "Config file (~/.lit-search-cite/config.json)" $cfgOk `
     "not found" "Run: .\scripts\setup.ps1"
@@ -124,7 +123,7 @@ if ($cfgOk) {
     try { $cfg = Get-Content $ConfigFile -Raw -Encoding UTF8 | ConvertFrom-Json } catch {}
 }
 
-# ── 8. Unpaywall email ────────────────────────────────────────────────────────
+# ── 7. Unpaywall email ────────────────────────────────────────────────────────
 $upEmail = ""
 if ($cfg) { $upEmail = $cfg.api_keys.unpaywall_email }
 if (-not $upEmail) { $upEmail = [System.Environment]::GetEnvironmentVariable("UNPAYWALL_EMAIL") }
@@ -132,36 +131,34 @@ Check "UNPAYWALL_EMAIL set" ($upEmail -and $upEmail -match '@') `
     "not set (PDF discovery via Unpaywall disabled)" `
     "Run .\scripts\setup.ps1 and enter any valid email (required by Unpaywall ToS)"
 
-# ── 9. CNKI VPN config ────────────────────────────────────────────────────────
-$vpnOk     = $cfg -and $cfg.vpn_url -and $cfg.vpn_url.StartsWith("http")
-$cnkiOk    = $cfg -and $cfg.cnki_vpn_base -and $cfg.cnki_vpn_base.StartsWith("http")
-Check "CNKI VPN URL configured" $vpnOk `
-    "not configured" `
-    "Run: python scripts/cnki-playwright.py --setup --school <your-school>"
-Check "CNKI WebVPN base URL configured" $cnkiOk `
-    "not configured" `
-    "Run: python scripts/cnki-playwright.py --setup --school <your-school>"
-
-# ── 10. CNKI session cookies ──────────────────────────────────────────────────
-$sessionOk = Test-Path $SessionFile
-if ($sessionOk) {
-    $sessionAge = (Get-Date) - (Get-Item $SessionFile).LastWriteTime
-    $fresh = $sessionAge.TotalDays -lt 7
-    Check "CNKI session cookies (age: $([int]$sessionAge.TotalDays)d)" $fresh `
-        "cookies are >7 days old — may need refresh" `
-        "Run: python scripts/cnki-playwright.py --login-only --no-headless"
+# ── 8. Chrome DevTools reachability (optional) ────────────────────────────────
+$cdpUrl = "http://localhost:9222"
+if ($chromeDevtoolsInMcp -and $mcpJson.mcpServers.'chrome-devtools'.env.CDP_URL) {
+    $cdpUrl = $mcpJson.mcpServers.'chrome-devtools'.env.CDP_URL
+}
+$chromeReachable = $false
+try {
+    $r = Invoke-WebRequest "$cdpUrl/json" -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
+    $chromeReachable = $r.StatusCode -eq 200
+} catch {}
+if ($chromeDevtoolsInMcp) {
+    Check "Chrome reachable at $cdpUrl" $chromeReachable `
+        "Chrome not running with remote debugging" `
+        "Start Chrome with: chrome.exe --remote-debugging-port=9222"
 } else {
-    Check "CNKI session cookies" $false "not found — headless CNKI search won't work" `
-        "Run: python scripts/cnki-playwright.py --login-only --no-headless"
+    if ($chromeReachable) {
+        $ok += "  [OK]   Chrome detected at $cdpUrl (not in mcp.json yet)"
+    }
+    # else: skip — chrome-devtools not configured, no point checking
 }
 
-# ── 11. scansci-pdf cookie dir ────────────────────────────────────────────────
+# ── 9. scansci-pdf data dir ───────────────────────────────────────────────────
 $scansciCookies = Test-Path $ScansciDir
 Check "scansci-pdf data dir (~/.scansci-pdf/)" $scansciCookies `
     "not found — publisher cookies not yet configured" `
     "Tell Claude: 'set up scansci-pdf browser cookies for ScienceDirect'"
 
-# ── 12. Wanfang key (optional) ────────────────────────────────────────────────
+# ── 10. Wanfang key (optional) ────────────────────────────────────────────────
 $wfKey = ""
 if ($cfg) { $wfKey = $cfg.api_keys.wanfang }
 if (-not $wfKey) { $wfKey = [System.Environment]::GetEnvironmentVariable("WANFANG_API_KEY") }
@@ -196,7 +193,8 @@ if ($errors.Count -eq 0 -and $warn.Count -le 2) {
     Write-Host "Status: NOT READY — fix FAILED items before using this skill." -ForegroundColor Red
 }
 Write-Host ""
-Write-Host "Full setup guide: references/api-setup.md" -ForegroundColor DarkGray
-Write-Host "Quick config:     .\scripts\setup.ps1" -ForegroundColor DarkGray
-Write-Host "CNKI setup:       python scripts/cnki-playwright.py --setup" -ForegroundColor DarkGray
+Write-Host "Full setup guide:        references/setup-guide.md" -ForegroundColor DarkGray
+Write-Host "MCP config template:     references/mcp-template.md" -ForegroundColor DarkGray
+Write-Host "Quick config:            .\scripts\setup.ps1" -ForegroundColor DarkGray
+Write-Host "Chrome DevTools MCP:     references/chrome-devtools.md" -ForegroundColor DarkGray
 Write-Host ""
