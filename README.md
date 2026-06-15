@@ -5,7 +5,7 @@
 一键安装：
 
 ```bash
-npx lit-search-cite
+npx lit-search-cite@latest
 ```
 
 自动适配 Claude Code / Claude Desktop / OpenCode / Codex / Hermes。
