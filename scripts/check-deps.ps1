@@ -22,9 +22,9 @@ function Check($label, $pass, $msg, $fix) {
     if ($pass) {
         $script:ok += "  [OK]   $label"
     } elseif ($fix) {
-        $script:warn += "  [WARN] $label — $msg`n         Fix: $fix"
+        $script:warn += "  [WARN] $label --$msg`n         Fix: $fix"
     } else {
-        $script:errors +="  [FAIL] $label — $msg"
+        $script:errors +="  [FAIL] $label --$msg"
     }
 }
 
@@ -81,18 +81,18 @@ if (Test-Path $McpFile) {
     }
 } else {
     Check "mcp.json" $false "not found at $McpFile" `
-        "Create $McpFile — see references/mcp-template.md"
+        "Create $McpFile --see references/mcp-template.md"
 }
 Check "ai4scholar MCP entry in mcp.json" $ai4scholarInMcp `
     "missing" "Add ai4scholar server block to $McpFile then restart Claude Code"
 Check "scansci-pdf MCP entry in mcp.json" $scansciInMcp `
     "missing" "Add scansci-pdf server block to $McpFile then restart Claude Code"
 
-# chrome-devtools is optional — WARN only
+# chrome-devtools is optional --WARN only
 if ($chromeDevtoolsInMcp) {
     $ok += "  [OK]   chrome-devtools MCP entry in mcp.json (paywall fallback enabled)"
 } else {
-    $warn += "  [WARN] chrome-devtools MCP entry in mcp.json — not configured (optional)`n         Fix: Add chrome-devtools block to $McpFile — see references/chrome-devtools.md"
+    $warn += "  [WARN] chrome-devtools MCP entry in mcp.json --not configured (optional)`n         Fix: Add chrome-devtools block to $McpFile --see references/chrome-devtools.md"
 }
 
 # ── 5. ai4scholar API key ─────────────────────────────────────────────────────
@@ -111,7 +111,7 @@ if (-not $ai4Key) {
 }
 Check "AI4SCHOLAR_API_KEY set" ($ai4Key -and $ai4Key.StartsWith("sk-")) `
     "not set or wrong format" `
-    "Get key at https://ai4scholar.net → Dashboard → Open Platform; add to mcp.json env block"
+    "Get key at https://ai4scholar.net ->Dashboard ->Open Platform; add to mcp.json env block"
 
 # ── 6. Config file ────────────────────────────────────────────────────────────
 $cfgOk = Test-Path $ConfigFile
@@ -149,13 +149,13 @@ if ($chromeDevtoolsInMcp) {
     if ($chromeReachable) {
         $ok += "  [OK]   Chrome detected at $cdpUrl (not in mcp.json yet)"
     }
-    # else: skip — chrome-devtools not configured, no point checking
+    # else: skip --chrome-devtools not configured, no point checking
 }
 
 # ── 9. scansci-pdf data dir ───────────────────────────────────────────────────
 $scansciCookies = Test-Path $ScansciDir
 Check "scansci-pdf data dir (~/.scansci-pdf/)" $scansciCookies `
-    "not found — publisher cookies not yet configured" `
+    "not found --publisher cookies not yet configured" `
     "Tell Claude: 'set up scansci-pdf browser cookies for ScienceDirect'"
 
 # ── 10. Wanfang key (optional) ────────────────────────────────────────────────
@@ -163,7 +163,7 @@ $wfKey = ""
 if ($cfg) { $wfKey = $cfg.api_keys.wanfang }
 if (-not $wfKey) { $wfKey = [System.Environment]::GetEnvironmentVariable("WANFANG_API_KEY") }
 if (-not $wfKey) {
-    $warn += "  [WARN] WANFANG_API_KEY not set — Chinese 万方 API results unavailable`n         Fix: Register at https://open.wanfangdata.com.cn/ then run .\scripts\setup.ps1"
+    $warn += "  [WARN] WANFANG_API_KEY not set --Chinese Wanfang API results unavailable`n         Fix: Register at https://open.wanfangdata.com.cn/ then run .\scripts\setup.ps1"
 } else {
     $ok += "  [OK]   WANFANG_API_KEY set"
 }
@@ -186,11 +186,11 @@ if ($errors.Count -gt 0) {
 
 Write-Host ""
 if ($errors.Count -eq 0 -and $warn.Count -le 2) {
-    Write-Host "Status: READY — all critical components configured." -ForegroundColor Green
+    Write-Host "Status: READY --all critical components configured." -ForegroundColor Green
 } elseif ($errors.Count -eq 0) {
-    Write-Host "Status: PARTIAL — some optional components not configured (see warnings)." -ForegroundColor Yellow
+    Write-Host "Status: PARTIAL --some optional components not configured (see warnings)." -ForegroundColor Yellow
 } else {
-    Write-Host "Status: NOT READY — fix FAILED items before using this skill." -ForegroundColor Red
+    Write-Host "Status: NOT READY --fix FAILED items before using this skill." -ForegroundColor Red
 }
 Write-Host ""
 Write-Host "Full setup guide:        references/setup-guide.md" -ForegroundColor DarkGray

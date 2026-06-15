@@ -4,7 +4,7 @@
 
     Stores all API keys to ~/.lit-search-cite/config.json
     for permanent reuse across sessions. All scripts read from this file
-    automatically — you only need to run setup once.
+    automatically --you only need to run setup once.
 
 .DESCRIPTION
     Run with no flags for interactive setup.
@@ -121,7 +121,7 @@ Write-Host "================================================" -ForegroundColor C
 Write-Host ""
 Write-Host "Keys are stored in: $ConfigFile" -ForegroundColor DarkGray
 Write-Host "Press Enter at any prompt to keep the current value." -ForegroundColor DarkGray
-Write-Host "Keys are never printed in full — they appear masked." -ForegroundColor DarkGray
+Write-Host "Keys are never printed in full --they appear masked." -ForegroundColor DarkGray
 
 $k = $cfg.api_keys
 
@@ -131,7 +131,7 @@ Write-Host "--- Academic Search APIs ---" -ForegroundColor Yellow
 $k.ai4scholar = Prompt-Key `
     "AI4Scholar API Key  [Semantic Scholar 214M papers + Google Scholar]" `
     $k.ai4scholar `
-    "Get at: https://ai4scholar.net  →  Dashboard  →  Open Platform  →  Create Key"
+    "Get at: https://ai4scholar.net  ->Dashboard  ->Open Platform  ->Create Key"
 
 $k.semantic_scholar = Prompt-Key `
     "Semantic Scholar API Key  [direct fallback if AI4Scholar unavailable]" `
@@ -147,7 +147,7 @@ Write-Host ""
 Write-Host "--- PDF & Journal Metadata APIs ---" -ForegroundColor Yellow
 
 $k.unpaywall_email = Prompt-Key `
-    "Unpaywall Email  [open-access PDF discovery — required by their ToS]" `
+    "Unpaywall Email  [open-access PDF discovery --required by their ToS]" `
     $k.unpaywall_email `
     "Any valid email works. Unpaywall is free. Example: yourname@email.com"
 
@@ -179,6 +179,6 @@ Write-Host "=== Setup complete! ===" -ForegroundColor Green
 Write-Host ""
 Write-Host "What's next:" -ForegroundColor Cyan
 Write-Host "  View config        : .\setup.ps1 -Show"
-Write-Host "  Chinese search     : .\scripts\cnki-search.ps1 -Query `"大语言模型 代码生成`""
+Write-Host "  Chinese search     : .\scripts\cnki-search.ps1 -Query `"LLM code generation`""
 Write-Host "  Chrome DevTools MCP: references/chrome-devtools.md (CNKI + paywall fallback)"
 Write-Host ""

@@ -9,8 +9,9 @@
     (written by setup.ps1). Env vars are used as fallback for backward compat.
 
     NOTE: CNKI has bot detection that blocks all non-browser HTTP clients.
-    For programmatic CNKI access use Chrome DevTools MCP — tell Claude:
-    "帮我在知网搜索「关键词」". This script generates browser-ready URLs.
+    For programmatic CNKI access use Chrome DevTools MCP --tell Claude:
+    Tell Claude "search CNKI for <keyword>" to use Chrome DevTools MCP instead.
+    This script generates browser-ready URLs as a fallback.
 
 .PARAMETER Query
     Search query (Chinese or English)
@@ -62,7 +63,7 @@ if ($DOI) {
         & $fetchScript -DOI $DOI
     } else {
         Write-Host "Sci-Hub URL (open in browser): https://sci-hub.st/$DOI"
-        Write-Host "Note: Sci-Hub uses DDoS-Guard — scripts cannot scrape it; use a browser."
+        Write-Host "Note: Sci-Hub uses DDoS-Guard --scripts cannot scrape it; use a browser."
     }
     return
 }
@@ -102,14 +103,14 @@ if ($Source -eq "wanfang" -or $Source -eq "all") {
     }
 }
 
-# ── 2. CNKI — browser URLs only (bot detection blocks all non-browser access) ──
+# ── 2. CNKI --browser URLs only (bot detection blocks all non-browser access) ──
 if ($Source -eq "cnki" -or $Source -eq "all") {
     $cnkiDirect = "https://kns.cnki.net/kns8/defaultresult/index?kw=$encoded&korder=td"
     Write-Host ""
     Write-Host "[CNKI] Bot detection blocks non-browser access. Open one of these manually:"
     Write-Host "  Direct: $cnkiDirect"
-    Write-Host "  Tip: For programmatic CNKI search, tell Claude: '帮我在知网搜索「$Query」'"
-    Write-Host "       (requires Chrome DevTools MCP — see references/chrome-devtools.md)"
+    Write-Host "  Tip: For programmatic CNKI search, configure Chrome DevTools MCP"
+    Write-Host "       then tell Claude to search CNKI for you. See: references/chrome-devtools.md"
 }
 
 # ── 3. Baidu Scholar ───────────────────────────────────────────────────────────
@@ -148,5 +149,5 @@ if ($results.Count -gt 0) {
     Write-Host ""
     Write-Host "No API results. Use the browser URLs above, or:"
     Write-Host "  - Add Wanfang API key: .\scripts\setup.ps1"
-    Write-Host "  - Programmatic CNKI:   tell Claude '帮我在知网搜索「$Query」' (Chrome DevTools MCP)"
+    Write-Host "  - Programmatic CNKI:   configure Chrome DevTools MCP (references/chrome-devtools.md)"
 }
