@@ -267,23 +267,26 @@ python scripts/pdf-fetch.py --doi "10.xxxx/..." --output ./Papers
 
 回退链：Unpaywall → OpenAlex → EuropePMC → Sci-Hub URL（仅生成链接，需在浏览器打开）。
 
-付费论文：一次性浏览器登录（`scansci_pdf_import_browser_cookies` / `carsi_login` / `ezproxy_login`）→ Cookie 保存至 `~/.scansci-pdf/` → 之后永久无头下载。
+付费论文（优先级顺序）：
+1. `scansci_pdf_smart_download` — 自动尝试 Springer Direct / ElsevierAPI / Sci-Hub / OA 库
+2. 仍失败 → Chrome DevTools MCP — 在已登录的 Chrome 中直接下载（零配置，复用机构 cookies）
+3. 一次性浏览器登录（`scansci_pdf_carsi_login` / `ezproxy_login`）→ Cookie 保存至 `~/.scansci-pdf/` → 之后永久无头下载
 
 ---
 
 ## CNKI / 知网（中文）
 
-无公开 REST API。使用 Playwright 浏览器引擎访问：
+无公开 REST API。通过 Chrome DevTools MCP 在你已登录的浏览器中访问：
 
-```bash
-# 一次性 VPN 配置（内置约 100 所高校）
-python scripts/cnki-playwright.py --setup --school scau
+```
+告诉 Claude："帮我在知网搜索「形状记忆 聚合物」"
+```
 
-# 无头搜索（配置完成后）
-python scripts/cnki-playwright.py --query "形状记忆 聚合物" --limit 20 --json-output results.json
+Claude 通过 Chrome DevTools MCP 自动操作知网，复用你浏览器中的机构登录状态，无需配置 VPN URL。详见 `references/chrome-devtools.md`。
 
-# 下载 PDF（需可见浏览器，CNKI 有 CAPTCHA）
-python scripts/cnki-playwright.py --query "形状记忆" --download --output ./Papers --no-headless
+无 Chrome DevTools MCP 时，生成浏览器 URL（需手动打开）：
+```powershell
+.\scripts\cnki-search.ps1 -Query "形状记忆 聚合物"
 ```
 
 万方 API（结构化中文结果）：Path H 上方。
