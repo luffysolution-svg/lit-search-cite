@@ -45,7 +45,7 @@ Start-Process "chrome.exe" --args "--remote-debugging-port=9222 --user-data-dir=
 }
 ```
 
-重启 Claude Code 后生效。完整模板见 `references/mcp-template.json`。
+重启 Claude Code 后生效。完整模板见 `references/mcp-template.md`。
 
 ---
 

@@ -242,7 +242,7 @@ See `references/chrome-devtools.md` for setup details.
 | `references/optional-apis.md` | OneScholar, Elsevier, Springer, Web of Science setup |
 | `references/chrome-devtools.md` | Chrome DevTools MCP setup — paywall fallback, CNKI institutional access |
 | `references/journal-ranks.json` | 300+ journal tier offline DB (built into multi-search scripts) |
-| `references/mcp-template.json` | MCP server config template (copy to `%USERPROFILE%\.claude\mcp.json`) |
+| `references/mcp-template.md` | MCP server config template (copy to `%USERPROFILE%\.claude\mcp.json`) |
 
 ---
 

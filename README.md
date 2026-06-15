@@ -91,7 +91,7 @@ npx lit-search-cite --target ~/my-skills      # 自定义路径
 
 ## MCP 配置
 
-详见 `references/mcp-template.json`，支持三种配置级别：
+详见 `references/mcp-template.md`，支持三种配置级别：
 
 | 级别 | MCP | 适用场景 |
 |------|-----|---------|

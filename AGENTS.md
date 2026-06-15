@@ -30,7 +30,7 @@ Copy the skill directory to the appropriate location for your platform:
 | OpenCode / Codex | `~/.config/opencode/skills/lit-search-cite/` | `.opencode/skills/lit-search-cite/` |
 | Agent Skills | `~/.agents/skills/lit-search-cite/` | `.agents/skills/lit-search-cite/` |
 
-MCP servers are required for full functionality. Copy `references/mcp-template.json` to `~/.claude/mcp.json` (or merge into your existing file) and restart Claude Code.
+MCP servers are required for full functionality. Copy the JSON blocks from `references/mcp-template.md` into `~/.claude/mcp.json` (or merge into your existing file) and restart Claude Code.
 
 ### Hermes
 

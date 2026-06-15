@@ -43,7 +43,7 @@ uvx --version
 }
 ```
 
-直接复制粘贴模板：`references/mcp-template.json`（含 Chrome DevTools MCP 可选项）。
+直接复制粘贴模板：`references/mcp-template.md`（含 Chrome DevTools MCP 可选项）。
 
 **重启 Claude Code** 后生效。
 
